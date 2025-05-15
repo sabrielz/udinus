@@ -1,158 +1,142 @@
 <!-- file: todo-uts.html -->
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UTS To Do List</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UTS To Do List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
-
 <body class="bg-light p-4">
-    <div class="container">
-        <div class="row">
-            <!-- =======================================================
-                KOLOM KIRI: Informasi Deskriptif Program
-            ======================================================== -->
-            <div class="col-md-6">
-                <h3>Deskripsi Program To-Do List</h3>
-                <p>Program ini memungkinkan pengguna menambahkan daftar kegiatan, menandai selesai, mengedit, dan
-                    menghapus, dengan pendekatan clone template row.</p>
-            </div>
+  <div class="container">
+    <div class="row">
+      <!-- Kolom kiri: deskripsi -->
+      <div class="col-md-6">
+        <h3>Deskripsi Program To-Do List</h3>
+        <p>Program ini memungkinkan pengguna menambahkan daftar kegiatan, menandai selesai, mengedit, dan menghapus, dengan pendekatan clone row template.</p>
+      </div>
 
-            <!-- =======================================================
-                KOLOM KANAN: Form Input dan Tabel Daftar
-            ======================================================== -->
-            <div class="col-md-6">
-                <h3>Form To-Do</h3>
-                <form id="todoForm">
-                    <div class="mb-3">
-                        <label for="todoName" class="form-label">Nama Kegiatan</label>
-                        <input type="text" class="form-control" id="todoName" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="todoDate" class="form-label">Tanggal Kegiatan</label>
-                        <input type="date" class="form-control" id="todoDate" required />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </form>
+      <!-- Kolom kanan: form + tabel -->
+      <div class="col-md-6">
+        <h3>Form To-Do</h3>
+        <form id="todoForm">
+          <div class="mb-3">
+            <label for="todoName" class="form-label">Nama Kegiatan</label>
+            <input type="text" class="form-control" id="todoName" required />
+          </div>
+          <div class="mb-3">
+            <label for="todoDate" class="form-label">Tanggal Kegiatan</label>
+            <input type="date" class="form-control" id="todoDate" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </form>
 
-                <!-- Tabel Daftar Kegiatan dengan Template Row -->
-                <h3 class="mt-4">Daftar Kegiatan</h3>
-                <table class="table table-bordered mt-3">
-                    <thead class="table-light">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Tanggal</th>
-                            <th>Selesai</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="todoTable">
-                        <!-- =======================================================
-                        TEMPLATE ROW (disembunyikan, digunakan untuk clone)
-                        ======================================================== -->
-                        <tr id="todoRowTemplate" class="d-none">
-                            <td class="no"></td>
-                            <td class="name"></td>
-                            <td class="date"></td>
-                            <td><input type="checkbox" class="done-checkbox" /></td>
-                            <td>
-                                <button class="btn btn-sm btn-warning me-1 edit-btn">Edit</button>
-                                <button class="btn btn-sm btn-danger delete-btn">Hapus</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <h3 class="mt-4">Daftar Kegiatan</h3>
+        <table class="table table-bordered mt-3">
+          <thead class="table-light">
+            <tr>
+              <th>No</th>
+              <th>Nama</th>
+              <th>Tanggal</th>
+              <th>Selesai</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="todoTable">
+            <!-- Template row (hidden) -->
+            <tr id="todoRowTemplate" class="d-none">
+              <td class="no"></td>
+              <td class="name"></td>
+              <td class="date"></td>
+              <td><input type="checkbox" class="done-checkbox" /></td>
+              <td>
+                <button class="btn btn-sm btn-warning me-1 edit-btn">Edit</button>
+                <button class="btn btn-sm btn-danger delete-btn">Hapus</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // =======================================================
-        // Deklarasi Elemen dan Variabel Global
-        // =======================================================
-        const form = document.getElementById("todoForm");
-        const tableBody = document.getElementById("todoTable");
-        const rowTemplate = document.getElementById("todoRowTemplate");
-        const nameInput = document.getElementById("todoName");
-        const dateInput = document.getElementById("todoDate");
+  <script>
+    // Deklarasi variabel
+    const form = document.getElementById("todoForm");
+    const tableBody = document.getElementById("todoTable");
+    const rowTemplate = document.getElementById("todoRowTemplate");
+    const nameInput = document.getElementById("todoName");
+    const dateInput = document.getElementById("todoDate");
 
-        let todos = [];      // Array penyimpan data kegiatan
-        let editIndex = -1;  // Penanda sedang edit (default -1)
+    let todos = [];
+    let editIndex = -1;
 
-        // =======================================================
-        // EVENT: Submit Form (Tambah / Edit Data)
-        // =======================================================
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            const name = nameInput.value.trim();
-            const date = dateInput.value;
-            if (!name || !date) return;
+    // Submit form
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = nameInput.value.trim();
+      const date = dateInput.value;
+      if (!name || !date) return;
 
-            if (editIndex >= 0) {
-                // Konfirmasi sebelum menyimpan hasil edit
-                if (!confirm("Apakah Anda yakin ingin menyimpan perubahan?")) return;
-                todos[editIndex] = { ...todos[editIndex], name, date };
-                editIndex = -1;
-            } else {
-                todos.push({ name, date, done: false });
-                alert("Data berhasil ditambahkan!");
-            }
+      if (editIndex >= 0) {
+        // Konfirmasi edit
+        if (!confirm("Apakah Anda yakin ingin menyimpan perubahan?")) return;
+        todos[editIndex] = { ...todos[editIndex], name, date };
+        editIndex = -1;
+      } else {
+        // Tambah baru
+        todos.push({ name, date, done: false });
+        alert("Data berhasil ditambahkan!");
+      }
 
-            form.reset();
-            renderTable();
+      form.reset();
+      renderTable();
+    });
+
+    // Render ulang isi tabel
+    function renderTable() {
+      // Hapus semua row kecuali template
+      [...tableBody.children].forEach((tr) => {
+        if (tr !== rowTemplate) tr.remove();
+      });
+
+      todos.forEach((todo, index) => {
+        // Clone dari template
+        const clone = rowTemplate.cloneNode(true);
+        clone.classList.remove("d-none");
+        clone.removeAttribute("id");
+
+        // Isi data
+        clone.querySelector(".no").innerText = index + 1;
+        clone.querySelector(".name").innerText = todo.name;
+        clone.querySelector(".date").innerText = todo.date;
+
+        // Checkbox
+        const checkbox = clone.querySelector(".done-checkbox");
+        checkbox.checked = todo.done;
+        checkbox.addEventListener("change", () => {
+          todos[index].done = checkbox.checked;
         });
 
-        // =======================================================
-        // FUNGSI: Render Seluruh Tabel dengan Clone Template
-        // =======================================================
-        function renderTable() {
-            // Hapus semua row kecuali template
-            [...tableBody.children].forEach((tr) => {
-                if (tr !== rowTemplate) tr.remove();
-            });
+        // Tombol edit
+        clone.querySelector(".edit-btn").addEventListener("click", () => {
+          nameInput.value = todo.name;
+          dateInput.value = todo.date;
+          editIndex = index;
+        });
 
-            todos.forEach((todo, index) => {
-                // Clone baris dari template tersembunyi
-                const clone = rowTemplate.cloneNode(true);
-                clone.classList.remove("d-none");
-                clone.removeAttribute("id");
+        // Tombol hapus
+        clone.querySelector(".delete-btn").addEventListener("click", () => {
+          if (confirm("Apakah Anda yakin ingin menghapus kegiatan ini?")) {
+            todos.splice(index, 1);
+            renderTable();
+          }
+        });
 
-                // Isi data ke dalam elemen hasil clone
-                clone.querySelector(".no").innerText = index + 1;
-                clone.querySelector(".name").innerText = todo.name;
-                clone.querySelector(".date").innerText = todo.date;
-
-                // Checklist selesai
-                const checkbox = clone.querySelector(".done-checkbox");
-                checkbox.checked = todo.done;
-                checkbox.addEventListener("change", () => {
-                    todos[index].done = checkbox.checked;
-                });
-
-                // Tombol Edit
-                clone.querySelector(".edit-btn").addEventListener("click", () => {
-                    nameInput.value = todo.name;
-                    dateInput.value = todo.date;
-                    editIndex = index;
-                });
-
-                // Tombol Hapus dengan konfirmasi
-                clone.querySelector(".delete-btn").addEventListener("click", () => {
-                    if (confirm("Apakah Anda yakin ingin menghapus kegiatan ini?")) {
-                        todos.splice(index, 1);
-                        renderTable();
-                    }
-                });
-
-                // Tambahkan ke tabel
-                tableBody.appendChild(clone);
-            });
-        }
-    </script>
+        // Tambah ke tabel
+        tableBody.appendChild(clone);
+      });
+    }
+  </script>
 </body>
-
 </html>
